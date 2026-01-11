@@ -14,6 +14,9 @@ jobs:
   sync-releases:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Required to push tags and create releases
+
     env:
       UPSTREAM_REPO: dteviot/WebToEpub
       FORK_REPO: druvx13/WebToEpub
