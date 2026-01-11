@@ -1,0 +1,188 @@
+# This workflow automatically publishes releases when upstream creates a new release
+# It mirrors releases from dteviot/WebToEpub to druvx13/WebToEpub
+
+name: Sync Releases from Upstream
+
+on:
+  schedule:
+    # Check for new releases every 6 hours
+    - cron: '30 */6 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  sync-releases:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/dteviot/WebToEpub.git || true
+          git fetch upstream --tags
+      
+      - name: Get upstream releases
+        id: get_releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching upstream releases..."
+          
+          # Get latest 10 releases from upstream
+          upstream_releases=$(gh api repos/dteviot/WebToEpub/releases --jq '.[].tag_name' 2>/dev/null || echo "")
+          
+          if [ -z "$upstream_releases" ]; then
+            echo "No releases found in upstream"
+            echo "has_releases=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "Upstream releases found:"
+          echo "$upstream_releases"
+          
+          # Get existing releases from fork
+          fork_releases=$(gh api repos/druvx13/WebToEpub/releases --jq '.[].tag_name' 2>/dev/null || echo "")
+          
+          echo "Fork releases:"
+          echo "$fork_releases"
+          
+          # Find releases that exist in upstream but not in fork
+          new_releases=""
+          while IFS= read -r release; do
+            if ! echo "$fork_releases" | grep -q "^${release}$"; then
+              new_releases="${new_releases}${release}"$'\n'
+            fi
+          done <<< "$upstream_releases"
+          
+          if [ -z "$new_releases" ]; then
+            echo "No new releases to sync"
+            echo "has_releases=false" >> $GITHUB_OUTPUT
+          else
+            echo "New releases to sync:"
+            echo "$new_releases"
+            echo "has_releases=true" >> $GITHUB_OUTPUT
+            # Save new releases for next step (use base64 to handle multiline)
+            echo "releases<<EOF" >> $GITHUB_OUTPUT
+            echo "$new_releases" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Sync new releases
+        if: steps.get_releases.outputs.has_releases == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Syncing new releases..."
+          
+          # Process each new release
+          while IFS= read -r tag; do
+            [ -z "$tag" ] && continue
+            
+            echo "Processing release: $tag"
+            
+            # Get release details from upstream
+            release_data=$(gh api repos/dteviot/WebToEpub/releases/tags/$tag 2>/dev/null || echo "")
+            
+            if [ -z "$release_data" ]; then
+              echo "Could not fetch release data for $tag, skipping..."
+              continue
+            fi
+            
+            # Extract release information
+            release_name=$(echo "$release_data" | jq -r '.name // .tag_name')
+            release_body=$(echo "$release_data" | jq -r '.body // ""')
+            is_prerelease=$(echo "$release_data" | jq -r '.prerelease')
+            is_draft=$(echo "$release_data" | jq -r '.draft')
+            
+            echo "Release name: $release_name"
+            echo "Is prerelease: $is_prerelease"
+            echo "Is draft: $is_draft"
+            
+            # Skip draft releases
+            if [ "$is_draft" = "true" ]; then
+              echo "Skipping draft release $tag"
+              continue
+            fi
+            
+            # Ensure the tag exists locally
+            if ! git rev-parse "$tag" >/dev/null 2>&1; then
+              echo "Tag $tag not found locally, fetching from upstream..."
+              git fetch upstream tag $tag --no-tags || {
+                echo "Failed to fetch tag $tag from upstream"
+                continue
+              }
+            fi
+            
+            # Push tag to fork
+            git push origin $tag || echo "Tag $tag already exists in fork or push failed"
+            
+            # Prepare release notes with attribution
+            release_notes="**Synced from upstream repository [dteviot/WebToEpub](https://github.com/dteviot/WebToEpub)**
+
+---
+
+$release_body"
+            
+            # Save release notes to a temp file
+            echo "$release_notes" > /tmp/release_notes_$tag.md
+            
+            # Create the release in fork
+            echo "Creating release $tag in fork..."
+            if [ "$is_prerelease" = "true" ]; then
+              gh release create "$tag" \
+                --title "$release_name" \
+                --notes-file "/tmp/release_notes_$tag.md" \
+                --prerelease || echo "Failed to create release $tag"
+            else
+              gh release create "$tag" \
+                --title "$release_name" \
+                --notes-file "/tmp/release_notes_$tag.md" || echo "Failed to create release $tag"
+            fi
+            
+            # Download and re-upload assets
+            echo "Downloading assets for $tag..."
+            asset_urls=$(echo "$release_data" | jq -r '.assets[]? | .browser_download_url')
+            
+            if [ -n "$asset_urls" ]; then
+              mkdir -p /tmp/release_assets_$tag
+              cd /tmp/release_assets_$tag
+              
+              while IFS= read -r url; do
+                [ -z "$url" ] && continue
+                echo "Downloading: $url"
+                curl -L -O "$url" || echo "Failed to download $url"
+              done <<< "$asset_urls"
+              
+              # Upload assets to fork release
+              for file in *; do
+                [ -f "$file" ] || continue
+                echo "Uploading asset: $file"
+                gh release upload "$tag" "$file" --repo druvx13/WebToEpub || echo "Failed to upload $file"
+              done
+              
+              cd -
+              rm -rf /tmp/release_assets_$tag
+            fi
+            
+            rm -f /tmp/release_notes_$tag.md
+            
+            echo "Completed processing release: $tag"
+            echo "---"
+          done <<< "${{ steps.get_releases.outputs.releases }}"
+          
+          echo "Release sync completed!"
+      
+      - name: Summary
+        run: |
+          echo "Release sync workflow completed"
+          echo "All new releases from dteviot/WebToEpub have been synced to druvx13/WebToEpub"

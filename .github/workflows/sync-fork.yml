@@ -1,0 +1,80 @@
+# This workflow keeps the fork in sync with the upstream repository
+# It syncs all branches from upstream to the fork
+
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/dteviot/WebToEpub.git || true
+          git remote -v
+      
+      - name: Fetch upstream
+        run: |
+          git fetch upstream --prune
+          git fetch origin --prune
+      
+      - name: Sync all branches
+        run: |
+          echo "Fetching upstream branches..."
+          
+          # Get all upstream branches
+          upstream_branches=$(git branch -r | grep 'upstream/' | sed 's|upstream/||' | grep -v HEAD)
+          
+          echo "Found upstream branches:"
+          echo "$upstream_branches"
+          
+          # Sync each branch
+          for branch in $upstream_branches; do
+            echo "Processing branch: $branch"
+            
+            # Check if branch exists locally
+            if git show-ref --verify --quiet refs/heads/$branch; then
+              echo "Branch $branch exists locally, updating..."
+              git checkout $branch
+              git merge upstream/$branch --ff-only || {
+                echo "Fast-forward merge failed for $branch, trying regular merge..."
+                git merge upstream/$branch -m "Merge upstream changes into $branch" || {
+                  echo "Merge failed for $branch, skipping..."
+                  git merge --abort || true
+                  continue
+                }
+              }
+            else
+              echo "Branch $branch does not exist locally, creating from upstream..."
+              git checkout -b $branch upstream/$branch
+            fi
+            
+            # Push to origin
+            echo "Pushing $branch to origin..."
+            git push origin $branch || echo "Failed to push $branch"
+          done
+          
+          echo "Sync completed successfully!"
+      
+      - name: Summary
+        run: |
+          echo "Fork sync completed"
+          echo "All branches from dteviot/WebToEpub have been synced to druvx13/WebToEpub"
