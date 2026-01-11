@@ -95,6 +95,9 @@ jobs:
           while IFS= read -r tag; do
             [ -z "$tag" ] && continue
             
+            # Sanitize tag to prevent path traversal
+            sanitized_tag=$(echo "$tag" | sed 's/[^a-zA-Z0-9._-]/_/g')
+            
             echo "Processing release: $tag"
             
             # Get release details from upstream
@@ -140,28 +143,28 @@ jobs:
               echo "---"
               echo ""
               echo "$release_body"
-            } > /tmp/release_notes_$tag.md
+            } > /tmp/release_notes_$sanitized_tag.md
             
             # Create the release in fork
             echo "Creating release $tag in fork..."
             if [ "$is_prerelease" = "true" ]; then
               gh release create "$tag" \
                 --title "$release_name" \
-                --notes-file "/tmp/release_notes_$tag.md" \
+                --notes-file "/tmp/release_notes_$sanitized_tag.md" \
                 --prerelease || echo "Failed to create release $tag"
             else
               gh release create "$tag" \
                 --title "$release_name" \
-                --notes-file "/tmp/release_notes_$tag.md" || echo "Failed to create release $tag"
+                --notes-file "/tmp/release_notes_$sanitized_tag.md" || echo "Failed to create release $tag"
             fi
             
             # Download and re-upload assets
             echo "Downloading assets for $tag..."
-            asset_urls=$(echo "$release_data" | jq -r '.assets[]? | .browser_download_url')
+            asset_urls=$(echo "$release_data" | jq -r '.assets[]? | select(.browser_download_url | startswith("https://github.com/")) | .browser_download_url')
             
             if [ -n "$asset_urls" ]; then
-              mkdir -p /tmp/release_assets_$tag
-              cd /tmp/release_assets_$tag
+              mkdir -p /tmp/release_assets_$sanitized_tag
+              cd /tmp/release_assets_$sanitized_tag
               
               while IFS= read -r url; do
                 [ -z "$url" ] && continue
@@ -169,18 +172,21 @@ jobs:
                 curl -L -O "$url" || echo "Failed to download $url"
               done <<< "$asset_urls"
               
-              # Upload assets to fork release
+              # Upload assets to fork release (only regular files, skip hidden files and directories)
               for file in *; do
+                # Skip if file doesn't exist or is not a regular file
                 [ -f "$file" ] || continue
+                # Skip hidden files
+                [[ "$file" == .* ]] && continue
                 echo "Uploading asset: $file"
                 gh release upload "$tag" "$file" --repo ${{ env.FORK_REPO }} || echo "Failed to upload $file"
               done
               
               cd -
-              rm -rf /tmp/release_assets_$tag
+              rm -rf /tmp/release_assets_$sanitized_tag
             fi
             
-            rm -f /tmp/release_notes_$tag.md
+            rm -f /tmp/release_notes_$sanitized_tag.md
             
             echo "Completed processing release: $tag"
             echo "---"

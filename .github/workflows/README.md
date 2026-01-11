@@ -70,10 +70,9 @@ If you fork this repository again or the upstream changes, you may need to updat
 ## Permissions
 
 These workflows require the following permissions:
-- **Contents:** Write (to push branches and tags)
-- **Releases:** Write (to create releases)
+- **Contents:** Write (to push branches, tags, and create releases)
 
-The workflows use `GITHUB_TOKEN` which is automatically provided by GitHub Actions.
+The workflows use `GITHUB_TOKEN` which is automatically provided by GitHub Actions with the permissions specified in each workflow file.
 
 ## Troubleshooting
 
