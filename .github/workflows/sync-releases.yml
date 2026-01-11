@@ -127,14 +127,13 @@ jobs:
             git push origin $tag || echo "Tag $tag already exists in fork or push failed"
             
             # Prepare release notes with attribution
-            release_notes="**Synced from upstream repository [dteviot/WebToEpub](https://github.com/dteviot/WebToEpub)**
-
----
-
-$release_body"
-            
-            # Save release notes to a temp file
-            echo "$release_notes" > /tmp/release_notes_$tag.md
+            {
+              echo "**Synced from upstream repository [dteviot/WebToEpub](https://github.com/dteviot/WebToEpub)**"
+              echo ""
+              echo "---"
+              echo ""
+              echo "$release_body"
+            } > /tmp/release_notes_$tag.md
             
             # Create the release in fork
             echo "Creating release $tag in fork..."
