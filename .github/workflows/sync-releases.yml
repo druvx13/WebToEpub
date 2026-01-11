@@ -13,6 +13,10 @@ on:
 jobs:
   sync-releases:
     runs-on: ubuntu-latest
+
+    env:
+      UPSTREAM_REPO: dteviot/WebToEpub
+      FORK_REPO: druvx13/WebToEpub
     
     steps:
       - name: Checkout repository
@@ -28,7 +32,7 @@ jobs:
       
       - name: Add upstream remote
         run: |
-          git remote add upstream https://github.com/dteviot/WebToEpub.git || true
+          git remote add upstream https://github.com/${{ env.UPSTREAM_REPO }}.git || true
           git fetch upstream --tags
       
       - name: Get upstream releases
@@ -39,7 +43,7 @@ jobs:
           echo "Fetching upstream releases..."
           
           # Get latest 10 releases from upstream
-          upstream_releases=$(gh api repos/dteviot/WebToEpub/releases --jq '.[].tag_name' 2>/dev/null || echo "")
+          upstream_releases=$(gh api repos/${{ env.UPSTREAM_REPO }}/releases --jq '.[].tag_name' 2>/dev/null || echo "")
           
           if [ -z "$upstream_releases" ]; then
             echo "No releases found in upstream"
@@ -51,7 +55,7 @@ jobs:
           echo "$upstream_releases"
           
           # Get existing releases from fork
-          fork_releases=$(gh api repos/druvx13/WebToEpub/releases --jq '.[].tag_name' 2>/dev/null || echo "")
+          fork_releases=$(gh api repos/${{ env.FORK_REPO }}/releases --jq '.[].tag_name' 2>/dev/null || echo "")
           
           echo "Fork releases:"
           echo "$fork_releases"
@@ -91,7 +95,7 @@ jobs:
             echo "Processing release: $tag"
             
             # Get release details from upstream
-            release_data=$(gh api repos/dteviot/WebToEpub/releases/tags/$tag 2>/dev/null || echo "")
+            release_data=$(gh api repos/${{ env.UPSTREAM_REPO }}/releases/tags/$tag 2>/dev/null || echo "")
             
             if [ -z "$release_data" ]; then
               echo "Could not fetch release data for $tag, skipping..."
@@ -128,7 +132,7 @@ jobs:
             
             # Prepare release notes with attribution
             {
-              echo "**Synced from upstream repository [dteviot/WebToEpub](https://github.com/dteviot/WebToEpub)**"
+              echo "**Synced from upstream repository [${{ env.UPSTREAM_REPO }}](https://github.com/${{ env.UPSTREAM_REPO }})**"
               echo ""
               echo "---"
               echo ""
@@ -166,7 +170,7 @@ jobs:
               for file in *; do
                 [ -f "$file" ] || continue
                 echo "Uploading asset: $file"
-                gh release upload "$tag" "$file" --repo druvx13/WebToEpub || echo "Failed to upload $file"
+                gh release upload "$tag" "$file" --repo ${{ env.FORK_REPO }} || echo "Failed to upload $file"
               done
               
               cd -
@@ -184,4 +188,4 @@ jobs:
       - name: Summary
         run: |
           echo "Release sync workflow completed"
-          echo "All new releases from dteviot/WebToEpub have been synced to druvx13/WebToEpub"
+          echo "All new releases from ${{ env.UPSTREAM_REPO }} have been synced to ${{ env.FORK_REPO }}"

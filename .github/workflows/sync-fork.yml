@@ -13,6 +13,10 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
+    env:
+      UPSTREAM_REPO: dteviot/WebToEpub
+      FORK_REPO: druvx13/WebToEpub
     
     steps:
       - name: Checkout repository
@@ -28,7 +32,7 @@ jobs:
       
       - name: Add upstream remote
         run: |
-          git remote add upstream https://github.com/dteviot/WebToEpub.git || true
+          git remote add upstream https://github.com/${{ env.UPSTREAM_REPO }}.git || true
           git remote -v
       
       - name: Fetch upstream
@@ -77,4 +81,4 @@ jobs:
       - name: Summary
         run: |
           echo "Fork sync completed"
-          echo "All branches from dteviot/WebToEpub have been synced to druvx13/WebToEpub"
+          echo "All branches from ${{ env.UPSTREAM_REPO }} have been synced to ${{ env.FORK_REPO }}"
