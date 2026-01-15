@@ -4,9 +4,9 @@
 name: Sync Releases from Upstream
 
 on:
-  schedule:
-    # Check for new releases every 6 hours
-    - cron: '30 */6 * * *'
+  # schedule:
+  #   # Check for new releases every 6 hours
+  #   - cron: '30 */6 * * *'
   workflow_dispatch:
     # Allow manual triggering
 
