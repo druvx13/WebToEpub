@@ -164,7 +164,7 @@ class NovelfullParser extends Parser {
     }
 
     preprocessRawDom(dom) {
-        this.processWatermarkInDom(dom);
+        this.tagWatermark(dom);
     }
 
     findChapterTitle(dom) {
@@ -180,8 +180,8 @@ class NovelfullParser extends Parser {
         return Array.from(dom.querySelectorAll("div.desc-text, div.info"));
     }
 
-    processWatermarkInDom(dom) {
-        const watermarkText = this.extractWatermarkFromScripts(dom);
+    tagWatermark(dom) {
+        const watermarkText = this.findWatermark(dom);
         
         if (!watermarkText) {
             return;
@@ -194,12 +194,12 @@ class NovelfullParser extends Parser {
         
         for (const paragraph of watermarkedParagraphs) {
             paragraph.textContent = paragraph.textContent.replace(watermarkText, "");
-            const hiddenWatermarkSpan = this.createHiddenWatermarkElement(dom, watermarkText);
+            const hiddenWatermarkSpan = this.makeSpanWithWatermark(dom, watermarkText);
             paragraph.appendChild(hiddenWatermarkSpan);
         }
     }
 
-    extractWatermarkFromScripts(dom) {
+    findWatermark(dom) {
         const watermarkToken = "original11Content.replace(\"";
         const scriptElements = Array.from(dom.querySelectorAll("script"));
         const watermarkScripts = scriptElements
@@ -219,7 +219,7 @@ class NovelfullParser extends Parser {
         return remainingScript.substring(0, watermarkEnd);
     }
 
-    createHiddenWatermarkElement(dom, watermarkText) {
+    makeSpanWithWatermark(dom, watermarkText) {
         const spanElement = dom.createElement("span");
         spanElement.textContent = watermarkText;
         spanElement.id = "span";
