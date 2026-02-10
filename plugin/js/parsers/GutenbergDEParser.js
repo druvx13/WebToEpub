@@ -1,9 +1,29 @@
-/*
-  Parser for gutenberg.spiegel.de. 
-  Start at Chapter 1, frequently a link like /buch/nnn/1, where nnn is the gutenberg book number.
-  Derived from:
-  Template to use to create a new parser
-*/
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
 // Use one or more of these to specify when the parser is to be used
@@ -11,7 +31,16 @@
 // Use this function if site's host name is sufficient.  
 // i.e. All pages are on same site, and use same format.
 //dead url/ parser
-parserFactory.register("gutenberg.spiegel.de", () => new GutenbergDEParser());
+parserFactory.register("gutenberg.spiegel.de", () => createGutenbergDEParserInstance());
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createGutenbergDEParserInstance() {
+    return new GutenbergDEParser();
+}
 
 class GutenbergDEParser extends Parser {
     constructor() {

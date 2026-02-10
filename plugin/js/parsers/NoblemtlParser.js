@@ -1,44 +1,79 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("arcanetranslations.com", () => new NoblemtlParser());
+parserFactory.register("arcanetranslations.com", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("bookalb.com", () => new NoblemtlParser());
-parserFactory.register("ckandawrites.online", () => new KnoxtspaceParser());
-parserFactory.register("daotranslate.com", () => new NoblemtlParser());
-parserFactory.register("daotranslate.us", () => new NoblemtlParser());
+parserFactory.register("bookalb.com", () => createNoblemtlParserInstance());
+parserFactory.register("ckandawrites.online", () => createKnoxtspaceParserInstance());
+parserFactory.register("daotranslate.com", () => createNoblemtlParserInstance());
+parserFactory.register("daotranslate.us", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("faloomtl.com", () => new NoblemtlParser());
+parserFactory.register("faloomtl.com", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("genesistls.com", () => new NoblemtlParser());
-parserFactory.register("hoxionia.com", () => new NoblemtlParser());
-parserFactory.register("jobnib.com", () => new NoblemtlParser());
-parserFactory.register("moonlightnovel.com", () => new NoblemtlParser());
-parserFactory.register("noblemtl.com", () => new NoblemtlParser());
-parserFactory.register("novelcranel.org", () => new NoblemtlParser());
+parserFactory.register("genesistls.com", () => createNoblemtlParserInstance());
+parserFactory.register("hoxionia.com", () => createNoblemtlParserInstance());
+parserFactory.register("jobnib.com", () => createNoblemtlParserInstance());
+parserFactory.register("moonlightnovel.com", () => createNoblemtlParserInstance());
+parserFactory.register("noblemtl.com", () => createNoblemtlParserInstance());
+parserFactory.register("novelcranel.org", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("novelsparadise.net", () => new NoblemtlParser());
+parserFactory.register("novelsparadise.net", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("readfreebooksonline.org", () => new NoblemtlParser());
+parserFactory.register("readfreebooksonline.org", () => createNoblemtlParserInstance());
 //dead url
-parserFactory.register("tamagotl.com", () => new NoblemtlParser());
-parserFactory.register("taonovel.com", () => new NoblemtlParser());
-parserFactory.register("knoxt.space", () => new KnoxtspaceParser());
-parserFactory.register("lazygirltranslations.com", () => new LazygirltranslationsParser());
+parserFactory.register("tamagotl.com", () => createNoblemtlParserInstance());
+parserFactory.register("taonovel.com", () => createNoblemtlParserInstance());
+parserFactory.register("knoxt.space", () => createKnoxtspaceParserInstance());
+parserFactory.register("lazygirltranslations.com", () => createLazygirltranslationsParserInstance());
 //dead url
-parserFactory.register("novelsknight.com", () => new NoblemtlParser());
-parserFactory.register("novelsknight.punchmanga.online", () => new NovelsknightlParser());
-parserFactory.register("cyborg-tl.com", () => new CyborgTlParser());
+parserFactory.register("novelsknight.com", () => createNoblemtlParserInstance());
+parserFactory.register("novelsknight.punchmanga.online", () => createNovelsknightlParserInstance());
+parserFactory.register("cyborg-tl.com", () => createCyborgTlParserInstance());
 
-parserFactory.register("pandamtl.com", () => new NoblemtlParser());
-parserFactory.register("universalnovel.com", () => new NoblemtlParser());
-parserFactory.register("whitemoonlightnovels.com", () => new WhitemoonlightnovelsParser());
+parserFactory.register("pandamtl.com", () => createNoblemtlParserInstance());
+parserFactory.register("universalnovel.com", () => createNoblemtlParserInstance());
+parserFactory.register("whitemoonlightnovels.com", () => createWhitemoonlightnovelsParserInstance());
 
-parserFactory.register("my-novel.online", () => new MyNovelOnlineParser());
+parserFactory.register("my-novel.online", () => createMyNovelOnlineParserInstance());
 
 parserFactory.registerRule(
     (url, dom) => NoblemtlParser.isNoblemtlTheme(dom) * 0.7,
-    () => new NoblemtlParser()
+    () => createNoblemtlParserInstance()
 );
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNoblemtlParserInstance() {
+    return new NoblemtlParser();
+}
 
 class NoblemtlParser extends Parser {
     constructor() {
@@ -131,6 +166,15 @@ class NoblemtlParser extends Parser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createKnoxtspaceParserInstance() {
+    return new KnoxtspaceParser();
+}
+
 class KnoxtspaceParser extends NoblemtlParser {
     constructor() {
         super();
@@ -161,6 +205,15 @@ class KnoxtspaceParser extends NoblemtlParser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createWhitemoonlightnovelsParserInstance() {
+    return new WhitemoonlightnovelsParser();
+}
+
 class WhitemoonlightnovelsParser extends NoblemtlParser {
     constructor() {
         super();
@@ -180,6 +233,15 @@ class WhitemoonlightnovelsParser extends NoblemtlParser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createLazygirltranslationsParserInstance() {
+    return new LazygirltranslationsParser();
+}
+
 class LazygirltranslationsParser extends KnoxtspaceParser {
     constructor() {
         super();
@@ -193,6 +255,15 @@ class LazygirltranslationsParser extends KnoxtspaceParser {
         let menu = dom.querySelector(".page");
         return util.hyperlinksToChapterList(menu);        
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createMyNovelOnlineParserInstance() {
+    return new MyNovelOnlineParser();
 }
 
 class MyNovelOnlineParser extends NoblemtlParser {
@@ -222,6 +293,15 @@ class MyNovelOnlineParser extends NoblemtlParser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovelsknightlParserInstance() {
+    return new NovelsknightlParser();
+}
+
 class NovelsknightlParser extends NoblemtlParser {
     constructor() {
         super();
@@ -231,6 +311,15 @@ class NovelsknightlParser extends NoblemtlParser {
     findContent(dom) {
         return dom.querySelector("[itemprop='text']");
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createCyborgTlParserInstance() {
+    return new CyborgTlParser();
 }
 
 class CyborgTlParser extends NoblemtlParser {

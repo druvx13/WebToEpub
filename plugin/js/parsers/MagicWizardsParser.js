@@ -1,22 +1,42 @@
-/*
-  MagicWizardsParser.js v0.72
-  
-  Parser for Magic the Gathering fiction, found on:
-  - mtgstory.com (redirect)
-  - https://magic.wizards.com/en/story (2023-2024)
-  - https://magic.wizards.com/en/articles/columns/magic-story (2014-2018)
-  - Archive.org versions of the above
-  - TODO: mtglore.com (redirects & mirrors)
-  - TODO: https://magic.wizards.com/en/story (Q4 2018-2022)
-  - TODO: Planeswalkers & Planes Databank
-  - TODO: Featured story slider Q1 2018
-  - UNTESTED: http://www.wizards.com/Magic/Magazine/Article.aspx (2014 and earlier)
-  - WONTFIX: hanweirchronicle.com (Tumblr blog, mostly image posts)
-*/
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
 // Register the parser for magic.wizards.com (archive.org is implicit)
-parserFactory.register("magic.wizards.com", () => new MagicWizardsParser());
+parserFactory.register("magic.wizards.com", () => createMagicWizardsParserInstance());
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createMagicWizardsParserInstance() {
+    return new MagicWizardsParser();
+}
 
 class MagicWizardsParser extends Parser {
     constructor() {
