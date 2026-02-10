@@ -109,6 +109,15 @@ class WordpressBaseParser extends Parser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createWanderertl130ParserInstance() {
+    return new Wanderertl130Parser();
+}
+
 class Wanderertl130Parser extends  WordpressBaseParser {
     constructor() {
         super();
