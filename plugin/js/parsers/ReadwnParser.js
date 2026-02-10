@@ -1,3 +1,31 @@
+/**
+ * ReadwnParser.js - Parser for Readwn-based novel sites
+ * 
+ * Licensed under the LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
 parserFactory.register("fannovel.com", () => new ReadwnParser());
@@ -17,7 +45,6 @@ parserFactory.register("wuxiahub.com", () => new ReadwnParser());
 parserFactory.register("wuxiamtl.com", () => new ReadwnParser());
 parserFactory.register("wuxiaone.com", () => new ReadwnParser());
 parserFactory.register("wuxiap.com", () => new ReadwnParser());
-//dead url
 parserFactory.register("wuxiapub.com", () => new ReadwnParser());
 parserFactory.register("wuxiaspot.com", () => new ReadwnParser());
 parserFactory.register("wuxiar.com", () => new ReadwnParser());
@@ -25,7 +52,7 @@ parserFactory.register("wuxiau.com", () => new ReadwnParser());
 parserFactory.register("wuxiazone.com", () => new ReadwnParser());
 
 parserFactory.registerRule(
-    (url, dom) => ReadwnParser.isReadwn(dom) * 0.8,
+    (url, dom) => ReadwnParser.validateReadwnStructure(dom) * 0.8,
     () => new ReadwnParser()
 );
 
@@ -35,50 +62,60 @@ class ReadwnParser extends Parser {
         this.minimumThrottle = 3000;
     }
 
-    static isReadwn(dom) {
-        return (dom.querySelector(ReadwnParser.CoverSelector) !== null)
-            && (dom.querySelector(ReadwnParser.AuthorSelector) !== null);
+    static validateReadwnStructure(dom) {
+        const hasCover = dom.querySelector("figure.cover") !== null;
+        const hasAuthor = dom.querySelector("span[itemprop='author']") !== null;
+        return hasCover && hasAuthor;
     }
 
     async getChapterUrls(dom, chapterUrlsUI) {
-        return this.getChapterUrlsFromMultipleTocPages(dom,
-            ReadwnParser.extractPartialChapterList,
-            ReadwnParser.getUrlsOfTocPages,
+        return this.getChapterUrlsFromMultipleTocPages(
+            dom,
+            this.buildChapterListFromDom,
+            this.buildTocPageUrls,
             chapterUrlsUI
         );
     }
 
-    static getUrlsOfTocPages(dom) {
-        let tocLinks = [...dom.querySelectorAll("ul.pagination li a")]
-            .map(l => new URL(l.href))
-            .filter(l => l.search.includes("page"));
-        let pageIds = tocLinks.map(l => parseInt(l.searchParams.get("page")));
-        let maxPage = Math.max(...pageIds);
-        let baseUrl = tocLinks[0];
-        let urls = [];
-        for (let i = 1; i <= maxPage; ++i) {
-            let params = baseUrl.searchParams;
-            params.set("page", i);
-            baseUrl.search = params.toString();
-            urls.push(baseUrl.href);
+    buildTocPageUrls(dom) {
+        const paginationLinks = Array.from(dom.querySelectorAll("ul.pagination li a"));
+        const urlsWithPage = paginationLinks
+            .map(link => new URL(link.href))
+            .filter(url => url.search.includes("page"));
+        
+        if (urlsWithPage.length === 0) {
+            return [];
         }
-        return urls;
+
+        const pageNumbers = urlsWithPage.map(url => parseInt(url.searchParams.get("page")));
+        const lastPageNumber = Math.max(...pageNumbers);
+        const templateUrl = urlsWithPage[0];
+        const tocUrls = [];
+        
+        for (let pageNum = 1; pageNum <= lastPageNumber; pageNum++) {
+            const searchParams = templateUrl.searchParams;
+            searchParams.set("page", pageNum);
+            templateUrl.search = searchParams.toString();
+            tocUrls.push(templateUrl.href);
+        }
+        
+        return tocUrls;
     }
 
-    static extractPartialChapterList(dom) {
-        return [...dom.querySelectorAll("ul.chapter-list a")]
-            .map(link => ({
-                sourceUrl:  link.href,
-                title: ReadwnParser.makeTitle(link)
-            }));
-    }
-
-    static makeTitle(link) {
-        let num = link.querySelector(".chapter-no").textContent.trim();
-        let title = link.querySelector(".chapter-title").textContent.trim();
-        return title.includes(num)
-            ? title
-            : num + ": " + title;
+    buildChapterListFromDom(dom) {
+        const chapterLinks = Array.from(dom.querySelectorAll("ul.chapter-list a"));
+        return chapterLinks.map(link => {
+            const chapterNumber = link.querySelector(".chapter-no").textContent.trim();
+            const chapterTitle = link.querySelector(".chapter-title").textContent.trim();
+            const fullTitle = chapterTitle.includes(chapterNumber) 
+                ? chapterTitle 
+                : `${chapterNumber}: ${chapterTitle}`;
+            
+            return {
+                sourceUrl: link.href,
+                title: fullTitle
+            };
+        });
     }
 
     findContent(dom) {
@@ -90,8 +127,11 @@ class ReadwnParser extends Parser {
     }
 
     extractAuthor(dom) {
-        let authorLabel = dom.querySelector(ReadwnParser.AuthorSelector);
-        return authorLabel?.textContent ?? super.extractAuthor(dom);
+        const authorElement = dom.querySelector("span[itemprop='author']");
+        if (authorElement && authorElement.textContent) {
+            return authorElement.textContent;
+        }
+        return super.extractAuthor(dom);
     }
 
     removeUnwantedElementsFromContentElement(element) {
@@ -104,13 +144,10 @@ class ReadwnParser extends Parser {
     }
 
     findCoverImageUrl(dom) {
-        return util.getFirstImgSrc(dom, ReadwnParser.CoverSelector);
+        return util.getFirstImgSrc(dom, "figure.cover");
     }
 
     getInformationEpubItemChildNodes(dom) {
-        return [...dom.querySelectorAll(".summary .content")];
+        return Array.from(dom.querySelectorAll(".summary .content"));
     }
 }
-
-ReadwnParser.CoverSelector = "figure.cover";
-ReadwnParser.AuthorSelector = "span[itemprop='author']";
