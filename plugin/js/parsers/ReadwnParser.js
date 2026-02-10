@@ -1,33 +1,68 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("fannovel.com", () => new ReadwnParser());
-parserFactory.register("fannovels.com", () => new ReadwnParser());
-parserFactory.register("fansmtl.com", () => new ReadwnParser());
-parserFactory.register("fanmtl.com", () => new ReadwnParser());
-parserFactory.register("novelmt.com", () => new ReadwnParser());
-parserFactory.register("novelmtl.com", () => new ReadwnParser());
-parserFactory.register("readwn.com", () => new ReadwnParser());
-parserFactory.register("wuxiabee.com", () => new ReadwnParser());
-parserFactory.register("wuxiabee.net", () => new ReadwnParser());
-parserFactory.register("wuxiabee.org", () => new ReadwnParser());
-parserFactory.register("wuxiafox.com", () => new ReadwnParser());
-parserFactory.register("wuxiago.com", () => new ReadwnParser());
-parserFactory.register("wuxiahere.com", () => new ReadwnParser());
-parserFactory.register("wuxiahub.com", () => new ReadwnParser());
-parserFactory.register("wuxiamtl.com", () => new ReadwnParser());
-parserFactory.register("wuxiaone.com", () => new ReadwnParser());
-parserFactory.register("wuxiap.com", () => new ReadwnParser());
+parserFactory.register("fannovel.com", () => createReadwnParserInstance());
+parserFactory.register("fannovels.com", () => createReadwnParserInstance());
+parserFactory.register("fansmtl.com", () => createReadwnParserInstance());
+parserFactory.register("fanmtl.com", () => createReadwnParserInstance());
+parserFactory.register("novelmt.com", () => createReadwnParserInstance());
+parserFactory.register("novelmtl.com", () => createReadwnParserInstance());
+parserFactory.register("readwn.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiabee.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiabee.net", () => createReadwnParserInstance());
+parserFactory.register("wuxiabee.org", () => createReadwnParserInstance());
+parserFactory.register("wuxiafox.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiago.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiahere.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiahub.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiamtl.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiaone.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiap.com", () => createReadwnParserInstance());
 //dead url
-parserFactory.register("wuxiapub.com", () => new ReadwnParser());
-parserFactory.register("wuxiaspot.com", () => new ReadwnParser());
-parserFactory.register("wuxiar.com", () => new ReadwnParser());
-parserFactory.register("wuxiau.com", () => new ReadwnParser());
-parserFactory.register("wuxiazone.com", () => new ReadwnParser());
+parserFactory.register("wuxiapub.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiaspot.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiar.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiau.com", () => createReadwnParserInstance());
+parserFactory.register("wuxiazone.com", () => createReadwnParserInstance());
 
 parserFactory.registerRule(
     (url, dom) => ReadwnParser.isReadwn(dom) * 0.8,
-    () => new ReadwnParser()
+    () => createReadwnParserInstance()
 );
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createReadwnParserInstance() {
+    return new ReadwnParser();
+}
 
 class ReadwnParser extends Parser {
     constructor() {

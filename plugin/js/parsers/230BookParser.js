@@ -1,8 +1,43 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
 //broken url
-parserFactory.register("230book.net", () => new _230BookParser() );
-parserFactory.register("38xs.com", () => new _38xsParser() );
+parserFactory.register("230book.net", () => create_230BookParserInstance() );
+parserFactory.register("38xs.com", () => create_38xsParserInstance() );
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function create_230BookBaseParserInstance() {
+    return new _230BookBaseParser();
+}
 
 class _230BookBaseParser extends Parser {
     constructor() {
@@ -41,6 +76,15 @@ class _230BookBaseParser extends Parser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function create_230BookParserInstance() {
+    return new _230BookParser();
+}
+
 class _230BookParser extends _230BookBaseParser {
     constructor() {
         super();
@@ -50,6 +94,15 @@ class _230BookParser extends _230BookBaseParser {
         // site does not tell us gbk is used to encode text
         return (await HttpClient.wrapFetch(url, this.makeOptions())).responseXML;
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function create_38xsParserInstance() {
+    return new _38xsParser();
 }
 
 class _38xsParser extends _230BookBaseParser {

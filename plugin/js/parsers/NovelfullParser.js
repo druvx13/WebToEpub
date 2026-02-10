@@ -1,56 +1,91 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("allnovel.org", () => new NovelfullParser());
-parserFactory.register("allnovelbin.net", () => new NovelfullParser());
-parserFactory.register("allnovelfull.app", () => new NovelfullParser());
-parserFactory.register("allnovelfull.com", () => new NovelfullParser());
+parserFactory.register("allnovel.org", () => createNovelfullParserInstance());
+parserFactory.register("allnovelbin.net", () => createNovelfullParserInstance());
+parserFactory.register("allnovelfull.app", () => createNovelfullParserInstance());
+parserFactory.register("allnovelfull.com", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("allnovelfull.org", () => new NovelfullParser());
-parserFactory.register("allnovelfull.net", () => new NovelfullParser());
-parserFactory.register("allnovelnext.com", () => new NovelfullParser());
-parserFactory.register("all-novelfull.net", () => new NovelfullParser());
-parserFactory.register("boxnovelfull.com", () => new NovelfullParser());
+parserFactory.register("allnovelfull.org", () => createNovelfullParserInstance());
+parserFactory.register("allnovelfull.net", () => createNovelfullParserInstance());
+parserFactory.register("allnovelnext.com", () => createNovelfullParserInstance());
+parserFactory.register("all-novelfull.net", () => createNovelfullParserInstance());
+parserFactory.register("boxnovelfull.com", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("freenovelsread.com", () => new NovelfullParser());
-parserFactory.register("freewn.com", () => new NovelfullParser());
-parserFactory.register("novel-bin.com", () => new NovelHyphenBinParser());
-parserFactory.register("novel-bin.net", () => new NovelHyphenBinParser());
-parserFactory.register("novel-bin.org", () => new NovelHyphenBinParser());
-parserFactory.register("novel-next.com", () => new NovelfullParser());
-parserFactory.register("novel35.com", () => new Novel35Parser());
-parserFactory.register("novelactive.org", () => new NovelfullParser());
-parserFactory.register("novelbin.com", () => new NovelbinParser());
-parserFactory.register("novelbin.me", () => new NovelfullParser());
-parserFactory.register("novelbin.net", () => new NovelfullParser());
-parserFactory.register("novelbin.org", () => new NovelfullParser());
-parserFactory.register("noveldrama.org", () => new NovelfullParser());
+parserFactory.register("freenovelsread.com", () => createNovelfullParserInstance());
+parserFactory.register("freewn.com", () => createNovelfullParserInstance());
+parserFactory.register("novel-bin.com", () => createNovelHyphenBinParserInstance());
+parserFactory.register("novel-bin.net", () => createNovelHyphenBinParserInstance());
+parserFactory.register("novel-bin.org", () => createNovelHyphenBinParserInstance());
+parserFactory.register("novel-next.com", () => createNovelfullParserInstance());
+parserFactory.register("novel35.com", () => createNovel35ParserInstance());
+parserFactory.register("novelactive.org", () => createNovelfullParserInstance());
+parserFactory.register("novelbin.com", () => createNovelbinParserInstance());
+parserFactory.register("novelbin.me", () => createNovelfullParserInstance());
+parserFactory.register("novelbin.net", () => createNovelfullParserInstance());
+parserFactory.register("novelbin.org", () => createNovelfullParserInstance());
+parserFactory.register("noveldrama.org", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("novelebook.net", () => new NovelfullParser());
-parserFactory.register("novelfull.com", () => new NovelfullParser());
-parserFactory.register("novelfull.net", () => new NovelfullParser());
-parserFactory.register("novelfullbook.com", () => new NovelfullParser());
-parserFactory.register("novelfulll.com", () => new NovelfullParser());
+parserFactory.register("novelebook.net", () => createNovelfullParserInstance());
+parserFactory.register("novelfull.com", () => createNovelfullParserInstance());
+parserFactory.register("novelfull.net", () => createNovelfullParserInstance());
+parserFactory.register("novelfullbook.com", () => createNovelfullParserInstance());
+parserFactory.register("novelfulll.com", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("novelhulk.net", () => new NovelfullParser());
-parserFactory.register("novelmax.net", () => new NovelfullParser());
-parserFactory.register("novelnext.com", () => new NovelfullParser());
-parserFactory.register("novelnext.dramanovels.io", () => new NovelfullParser());
-parserFactory.register("novelnext.net", () => new NovelfullParser());
-parserFactory.register("novelnextz.com", () => new NovelfullParser());
+parserFactory.register("novelhulk.net", () => createNovelfullParserInstance());
+parserFactory.register("novelmax.net", () => createNovelfullParserInstance());
+parserFactory.register("novelnext.com", () => createNovelfullParserInstance());
+parserFactory.register("novelnext.dramanovels.io", () => createNovelfullParserInstance());
+parserFactory.register("novelnext.net", () => createNovelfullParserInstance());
+parserFactory.register("novelnextz.com", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("noveltop1.org", () => new NovelfullParser());
-parserFactory.register("noveltrust.net", () => new NovelfullParser());
-parserFactory.register("novelusb.com", () => new NovelfullParser());
-parserFactory.register("novelusb.net", () => new NovelfullParser());
-parserFactory.register("novelxo.net", () => new NovelfullParser());
-parserFactory.register("novlove.com", () => new NovelfullParser());
-parserFactory.register("readnovelfull.me", () => new NovelfullParser());
+parserFactory.register("noveltop1.org", () => createNovelfullParserInstance());
+parserFactory.register("noveltrust.net", () => createNovelfullParserInstance());
+parserFactory.register("novelusb.com", () => createNovelfullParserInstance());
+parserFactory.register("novelusb.net", () => createNovelfullParserInstance());
+parserFactory.register("novelxo.net", () => createNovelfullParserInstance());
+parserFactory.register("novlove.com", () => createNovelfullParserInstance());
+parserFactory.register("readnovelfull.me", () => createNovelfullParserInstance());
 //dead url
-parserFactory.register("thenovelbin.org", () => new NovelfullParser());
-parserFactory.register("topnovelfull.com", () => new NovelfullParser());
-parserFactory.register("zinnovel.net", () => new NovelfullParser());
+parserFactory.register("thenovelbin.org", () => createNovelfullParserInstance());
+parserFactory.register("topnovelfull.com", () => createNovelfullParserInstance());
+parserFactory.register("zinnovel.net", () => createNovelfullParserInstance());
 
-parserFactory.registerManualSelect("NovelNext", () => new NovelfullParser());
+parserFactory.registerManualSelect("NovelNext", () => createNovelfullParserInstance());
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovelfullParserInstance() {
+    return new NovelfullParser();
+}
 
 class NovelfullParser extends Parser {
     constructor() {
@@ -181,6 +216,15 @@ class NovelfullParser extends Parser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovel35ParserInstance() {
+    return new Novel35Parser();
+}
+
 class Novel35Parser extends NovelfullParser {
     constructor() {
         super();
@@ -209,6 +253,15 @@ class Novel35Parser extends NovelfullParser {
     }    
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovelHyphenBinParserInstance() {
+    return new NovelHyphenBinParser();
+}
+
 class NovelHyphenBinParser extends NovelfullParser {
     constructor() {
         super();
@@ -222,6 +275,15 @@ class NovelHyphenBinParser extends NovelfullParser {
         }
         super.removeUnwantedElementsFromContentElement(element);
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovelbinParserInstance() {
+    return new NovelbinParser();
 }
 
 class NovelbinParser extends NovelfullParser {

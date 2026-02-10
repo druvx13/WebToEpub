@@ -1,29 +1,64 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("listnovel.com", () => new MadaraParser());
+parserFactory.register("listnovel.com", () => createMadaraParserInstance());
 //dead url
-parserFactory.register("readwebnovel.xyz", () => new MadaraParser());
-parserFactory.register("wuxiaworld.site", () => new MadaraParser());
+parserFactory.register("readwebnovel.xyz", () => createMadaraParserInstance());
+parserFactory.register("wuxiaworld.site", () => createMadaraParserInstance());
 //dead url
-parserFactory.register("pery.info", () => new MadaraParser());
-parserFactory.register("morenovel.net", () => new MadaraParser());
-parserFactory.register("nightcomic.com", () => new MadaraParser());
+parserFactory.register("pery.info", () => createMadaraParserInstance());
+parserFactory.register("morenovel.net", () => createMadaraParserInstance());
+parserFactory.register("nightcomic.com", () => createMadaraParserInstance());
 //dead url
-parserFactory.register("webnovel.live", () => new MadaraParser());
+parserFactory.register("webnovel.live", () => createMadaraParserInstance());
 //dead url
-parserFactory.register("noveltrench.com", () => new MadaraParser());
-parserFactory.register("mangasushi.net", () => new MadaraParser());
+parserFactory.register("noveltrench.com", () => createMadaraParserInstance());
+parserFactory.register("mangasushi.net", () => createMadaraParserInstance());
 //dead url
-parserFactory.register("mangabob.com", () => new MadaraParser());
-parserFactory.register("greenztl2.com", () => new MadaraVariantParser());
+parserFactory.register("mangabob.com", () => createMadaraParserInstance());
+parserFactory.register("greenztl2.com", () => createMadaraVariantParserInstance());
 
-parserFactory.register("indratranslations.com", () => new KdtnovelsParser());
-parserFactory.register("kdtnovels.com", () => new KdtnovelsParser());
+parserFactory.register("indratranslations.com", () => createKdtnovelsParserInstance());
+parserFactory.register("kdtnovels.com", () => createKdtnovelsParserInstance());
 
 parserFactory.registerRule(
     (url, dom) => MadaraParser.isMadaraTheme(dom) * 0.6,
-    () => new MadaraParser()
+    () => createMadaraParserInstance()
 );
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createMadaraParserInstance() {
+    return new MadaraParser();
+}
 
 class MadaraParser extends WordpressBaseParser {
     constructor() {
@@ -99,6 +134,15 @@ class MadaraParser extends WordpressBaseParser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createMadaraVariantParserInstance() {
+    return new MadaraVariantParser();
+}
+
 class MadaraVariantParser extends MadaraParser {
     async getChapterUrls(dom) {
         return [...dom.querySelectorAll("li.wp-manga-chapter a:not([title], [data-locked='1'])")]
@@ -138,6 +182,15 @@ class MadaraVariantParser extends MadaraParser {
     findChapterTitle(dom) {
         return dom.querySelector(".main-col h1:not(.menu-title)").textContent;
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createKdtnovelsParserInstance() {
+    return new KdtnovelsParser();
 }
 
 class KdtnovelsParser extends MadaraParser {

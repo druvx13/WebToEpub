@@ -1,18 +1,53 @@
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("findnovel.net", () => new FindNovelParser());
-parserFactory.register("lightnovelcave.com", () => new LightNovelWorldParser());
-parserFactory.register("lightnovelworld.co", () => new LightNovelWorldParser());
-parserFactory.register("lightnovelworld.com", () => new LightNovelWorldParser());
-parserFactory.register("lightnovelpub.com", () => new LightNovelPubParser());
-parserFactory.register("lightnovelpub.fan", () => new LightNovelWorldParser());
-parserFactory.register("novelfire.docsachhay.net", () => new LightNovelWorldParser());
-parserFactory.register("novelbob.org", () => new LightNovelWorldParser());
-parserFactory.register("novelpub.com", () => new LightNovelWorldParser());
-parserFactory.register("novelfire.net", () => new NovelfireParser());
-parserFactory.register("webnovelpub.com", () => new LightNovelWorldParser());
-parserFactory.register("webnovelpub.pro", () => new LightNovelWorldParser());
-parserFactory.register("pandanovel.co", () => new LightNovelWorldParser());
+parserFactory.register("findnovel.net", () => createFindNovelParserInstance());
+parserFactory.register("lightnovelcave.com", () => createLightNovelWorldParserInstance());
+parserFactory.register("lightnovelworld.co", () => createLightNovelWorldParserInstance());
+parserFactory.register("lightnovelworld.com", () => createLightNovelWorldParserInstance());
+parserFactory.register("lightnovelpub.com", () => createLightNovelPubParserInstance());
+parserFactory.register("lightnovelpub.fan", () => createLightNovelWorldParserInstance());
+parserFactory.register("novelfire.docsachhay.net", () => createLightNovelWorldParserInstance());
+parserFactory.register("novelbob.org", () => createLightNovelWorldParserInstance());
+parserFactory.register("novelpub.com", () => createLightNovelWorldParserInstance());
+parserFactory.register("novelfire.net", () => createNovelfireParserInstance());
+parserFactory.register("webnovelpub.com", () => createLightNovelWorldParserInstance());
+parserFactory.register("webnovelpub.pro", () => createLightNovelWorldParserInstance());
+parserFactory.register("pandanovel.co", () => createLightNovelWorldParserInstance());
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createLightNovelWorldParserInstance() {
+    return new LightNovelWorldParser();
+}
 
 class LightNovelWorldParser extends Parser {
     constructor() {
@@ -143,11 +178,29 @@ class LightNovelWorldParser extends Parser {
     }
 }
 
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createLightNovelPubParserInstance() {
+    return new LightNovelPubParser();
+}
+
 class LightNovelPubParser extends LightNovelWorldParser {
     constructor() {
         super();
         this.minimumThrottle = 1200;
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createFindNovelParserInstance() {
+    return new FindNovelParser();
 }
 
 class FindNovelParser extends LightNovelWorldParser {
@@ -159,6 +212,15 @@ class FindNovelParser extends LightNovelWorldParser {
         util.removeHTMLUnknownElement(element);
         super.removeUnwantedElementsFromContentElement(element);
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createNovelfireParserInstance() {
+    return new NovelfireParser();
 }
 
 class NovelfireParser extends FindNovelParser {

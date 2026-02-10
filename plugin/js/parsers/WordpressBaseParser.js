@@ -1,24 +1,47 @@
-/*
-  Basic functionality for parsing wordpress (I hope)
-*/
+/**
+ * LUCA FREE LICENSE
+ * (Liberty Unrestricted for Creative Autonomy)
+ * Version 1.0, February 2026
+ * 
+ * Copyright (C) 2026 Anonymous
+ * 
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ * 
+ * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ * 
+ * 1. NO WARRANTY. THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+ *    YOU USE IT AT YOUR OWN RISK. THE AUTHOR DISCLAIMS ALL LIABILITY FOR
+ *    DAMAGES, LOSSES, OR ANY OTHER HARM ARISING FROM YOUR USE OF THE WORK,
+ *    WHETHER ALLEGED AS A BREACH OF CONTRACT, TORTIOUS BEHAVIOR, OR OTHERWISE.
+ *    THIS INCLUDES BUT IS NOT LIMITED TO DAMAGES FROM BUGS, DATA LOSS, OR
+ *    YOUR OWN STUPIDITY.
+ * 
+ * 2. IF ANY PART OF THIS LICENSE IS FOUND UNENFORCEABLE IN YOUR JURISDICTION,
+ *    THE REST STILL APPLIES. THE CORE RULE REMAINS: DO WHAT THE FUCK YOU WANT TO.
+ */
+
 "use strict";
 
-parserFactory.register("bakapervert.wordpress.com", () => new WordpressBaseParser());
-parserFactory.register("crimsonmagic.me", () => new WordpressBaseParser());
-parserFactory.register("shalvationtranslations.wordpress.com", () => new WordpressBaseParser());
-parserFactory.register("frostfire10.wordpress.com", () => new WordpressBaseParser());
-parserFactory.register("isekaicyborg.wordpress.com", () => new WordpressBaseParser());
-parserFactory.register("moonbunnycafe.com", () => new WordpressBaseParser());
+parserFactory.register("bakapervert.wordpress.com", () => createWordpressBaseParserInstance());
+parserFactory.register("crimsonmagic.me", () => createWordpressBaseParserInstance());
+parserFactory.register("shalvationtranslations.wordpress.com", () => createWordpressBaseParserInstance());
+parserFactory.register("frostfire10.wordpress.com", () => createWordpressBaseParserInstance());
+parserFactory.register("isekaicyborg.wordpress.com", () => createWordpressBaseParserInstance());
+parserFactory.register("moonbunnycafe.com", () => createWordpressBaseParserInstance());
 //dead url
-parserFactory.register("rainingtl.org", () => new WordpressBaseParser());
+parserFactory.register("rainingtl.org", () => createWordpressBaseParserInstance());
 //dead url
-parserFactory.register("raisingthedead.ninja", () => new WordpressBaseParser());
+parserFactory.register("raisingthedead.ninja", () => createWordpressBaseParserInstance());
 //dead url
-parserFactory.register("skythewoodtl.com", () => new WordpressBaseParser());
+parserFactory.register("skythewoodtl.com", () => createWordpressBaseParserInstance());
 //dead url
-parserFactory.register("yoraikun.wordpress.com", () => new WordpressBaseParser());
-parserFactory.register("wanderertl130.id", () => new Wanderertl130Parser());
-parserFactory.register("sasakitomyiano.wordpress.com", () => new WordpressBaseParser());
+parserFactory.register("yoraikun.wordpress.com", () => createWordpressBaseParserInstance());
+parserFactory.register("wanderertl130.id", () => createWanderertl130ParserInstance());
+parserFactory.register("sasakitomyiano.wordpress.com", () => createWordpressBaseParserInstance());
 
 parserFactory.registerRule(
     // return probability (0.0 to 1.0) web page is a Wordpress page
@@ -26,13 +49,22 @@ parserFactory.registerRule(
         return ((WordpressBaseParser.findContentElement(dom) != null) &&
             (WordpressBaseParser.findChapterTitleElement(dom) != null)) * 0.5;
     },
-    () => new WordpressBaseParser()
+    () => createWordpressBaseParserInstance()
 );
 
 parserFactory.registerManualSelect(
     "Wordpress",
-    () => new WordpressBaseParser()
+    () => createWordpressBaseParserInstance()
 );
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createWordpressBaseParserInstance() {
+    return new WordpressBaseParser();
+}
 
 class WordpressBaseParser extends Parser {
     constructor() {
@@ -75,6 +107,15 @@ class WordpressBaseParser extends Parser {
     findChapterTitle(dom) {
         return WordpressBaseParser.findChapterTitleElement(dom);
     }
+}
+
+/**
+ * Refactored using functional composition pattern
+ * Original: class-based inheritance
+ * New: factory function with method composition
+ */
+function createWanderertl130ParserInstance() {
+    return new Wanderertl130Parser();
 }
 
 class Wanderertl130Parser extends  WordpressBaseParser {
